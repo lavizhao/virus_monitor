@@ -37,6 +37,8 @@ class kvtuple():
     def __init__(self,k,v,is_pk=False,is_auto=False):
         self.__key = k
         self.__value = v
+        self.key = k
+        self.value = v
         
         if self.__value not in nf:
             logging.error("kvtuple value %s not in field"%(self.__value))
@@ -44,6 +46,7 @@ class kvtuple():
         self.__is_pk = is_pk
         self.__is_auto = is_auto    
 
+    #建表时候的字符串
     def __str__(self):
         result = "%s %s"%(self.__key,nf[self.__value])
         if self.__is_pk :
@@ -73,7 +76,8 @@ class table:
                 kv = kvtuple(k,v[0])
 
             self.__kvtuple.append(kv)
-        
+
+    #建表时候的创建语句
     def sql_str(self):
         result = "create table %s("%(self.__name)
         for indx in range(len(self.__kvtuple)):
@@ -88,3 +92,37 @@ class table:
 
     def drop_str(self):
         return "drop table %s"%(self.__name)
+
+    #ndict构成: {col1:value1,...} col表示字段, value表示值
+    #注意, 插入的语句是这么写的 :  insert links (name,url) values('jerichen','gdsz'),('alone','gdgz');    
+    def insert_str(self,ndict):
+        result = "insert into %s("%(self.name)
+        result1 = "values("
+        
+        for indx in range(len(self.__kvtuple)):
+            kv = self.__kvtuple[indx]
+
+            #字段
+            col = kv.key
+
+            #值 #注意, 这里没有考虑auto increment的情况
+            try :
+                if kv.value != "auto":
+                    value = ndict[col]
+                else:
+                    pass
+
+                result += "%s"%(col)
+                result1 += "\'%s\'"%(value)
+                    
+            except Exception as err:
+                logging.error(err)
+                logging.error("引入非法字段")
+
+            if indx != len(self.__kvtuple) -1:
+                result += ", "
+                result1 += ", "
+
+        result += ")"
+        result1 += ")"
+        return result + result1

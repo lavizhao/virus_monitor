@@ -1,16 +1,13 @@
 #!/usr/bin/python3
 
 '''
-建立数据库文件
-执行  ./create_db.py
-
-
+表的基本信息
 '''
 
 import logging
 
-from db_info import field,kvtuple,table
-from db import mydb
+from .db_info import field,kvtuple,table
+from .db import mydb
 
 mdb = mydb(host='localhost',port='3306',user='root',passwd='')
 
@@ -236,8 +233,10 @@ def main():
     for tb in my_table:
         mdb.execute_sql(tb.sql_str(),"virus")
 
-if __name__ == '__main__':
-    main()
-    #drop()
-    #drop_table()
 
+def get_table(tb_name):
+    for tb in my_table:
+        if tb_name == tb.name:
+            return tb
+
+    logging.error("can not find table")
