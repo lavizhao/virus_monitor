@@ -42,3 +42,19 @@ class mydb:
         except Exception as err:
             logging.error(err)
         
+    def select_sql(self,sql_str,db_name):
+        try:
+            cur = self.conn.cursor()
+            
+            cur.execute("use %s"%(db_name))
+            cur.execute(sql_str)
+            
+            result = cur.fetchall()
+            self.conn.commit()
+            
+            return result
+            
+        except Exception as err:
+            logging.error(err)
+            logging.error("select error")
+

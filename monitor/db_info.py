@@ -105,7 +105,7 @@ class table:
             #字段
             col = kv.key
 
-            #值 #注意, 这里没有考虑auto increment的情况
+            #值 #注意, 这里没有考虑auto increment和int的情况#
             try :
                 if kv.value != "auto":
                     value = ndict[col]
