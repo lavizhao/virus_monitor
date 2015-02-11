@@ -9,9 +9,10 @@
 
 ##执行
 
-###monitor
+###run
 
 `./create_db.py` 建立数据库, 执行main函数则建数据库, 建表, drop则删除整个数据库
+`./insert.py` 插入一些样例数据
 
 ###test
 

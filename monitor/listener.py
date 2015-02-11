@@ -12,16 +12,26 @@ from socketserver import DatagramRequestHandler as DRH
 
 from .db import mydb
 
+from .table_info import my_table,get_table
+
+#得到探针日志信息表
+probe_log_info = get_table("probe_log_info")
+
 server_ip = '0.0.0.0'
 server_port = 514
 server_address = (server_ip,server_port)
 data_payload = 2048
 db_name = "virus"
 
+import re
+
+import time
+
+def get_time_str():
+    return time.strftime('%Y-%m-%d %H:%M:%S')
+
 class listener(DRH):
 
-
-    
     #执行监听任务
     def handle(self):
         self.db = mydb(host='localhost',user="root",passwd='',port='3306')
@@ -64,10 +74,56 @@ class listener(DRH):
             print("编码格式",coding_type)
             print("匹配规则",matching_rule)
             print("映射字段",matching_position)
+
+            #step4 将data转码, 转成utf-8
+            data = str(data,encoding=coding_type)
+            data = data.encode()
+            data = str(data,encoding="utf-8")
+
+            print("data now is : ",data)
+
+            #step5 用正则表达式抓取
+            pattern = re.compile(matching_rule,re.DOTALL)
+            print("匹配规则|%s|"%(matching_rule))
+            temp_position = pattern.findall(data)[0]
+            print(temp_position)
+
+
+            #step6 检验合法性=====未做
+
+            #step 7 映射字段
+            ndict = self.get_matching_position(temp_position,matching_position)
+            ##填写其他信息
+            ndict["log_id"] = "test"
+            ndict["probe_ip"] = ip
+            ndict["infected_time"] = get_time_str()
+
+            print(ndict)
+
+            #step 8 存
+            insert_str = probe_log_info.insert_str(ndict)
+            print("============================================")
+            print("插入语句",insert_str)
+            self.db.execute_sql(insert_str,db_name)
                 
         else:
             logging.warning("no data recived, client error")
 
+
+    #matching position 形式如下: col:0 0表示正则表达式抓出来的pattern的位置
+    def get_matching_position(self,position,matching_position):
+        sp = matching_position.split()
+
+        ndict = {}
+        
+        for kv in sp:
+            t = kv.split(":")
+            key,value = t[0],int(t[1])
+
+            ndict[key] = position[value]
+
+        return ndict
+            
     #封装sql语句,起到的作用是数据#
     #sql1 通过ip和port查找数据库中的探针名
     #====== 这里没有用port, 因为udp的port每次都会变 =======

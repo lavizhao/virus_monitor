@@ -107,21 +107,21 @@ class table:
 
             #值 #注意, 这里没有考虑auto increment和int的情况#
             try :
-                if kv.value != "auto":
+                if kv.value != "auto" and kv.value !="int":
                     value = ndict[col]
+                    result += "%s"%(col)
+                    result1 += "\'%s\'"%(value)
+                    if indx != len(self.__kvtuple) -1:
+                        result += ", "
+                        result1 += ", "
+
                 else:
                     pass
-
-                result += "%s"%(col)
-                result1 += "\'%s\'"%(value)
                     
             except Exception as err:
                 logging.error(err)
-                logging.error("引入非法字段")
+                logging.error("引入非法字段 |%s|"%(col))
 
-            if indx != len(self.__kvtuple) -1:
-                result += ", "
-                result1 += ", "
 
         result += ")"
         result1 += ")"

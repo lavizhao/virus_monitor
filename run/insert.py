@@ -50,9 +50,9 @@ if __name__ == '__main__':
     record3 = {\
                "device_type":"ruixing",\
                "brand":"unknown",\
-               "coding_type":"test",\
-               "matching_rule":"test",\
-               "matching_position":"test"\
+               "coding_type":"utf-8",\
+               "matching_rule":r"<(.+?)>viruslog: \\S+ \\S+ \\S+ \\S+ (.+?) (.+?) \\S+ \\S+ (.+?) (.+?) \\S+ (.+?) (.+?) \\S+ GET\\S+ \\S+ ",\
+               "matching_position":"log_level:0 virus_name:1 virus_type:2 spread_device_ip:3 spread_device_port:4 infected_device_ip:5 infected_device_port:6"\
            }
 
     tb = get_table("probe_type_info")
