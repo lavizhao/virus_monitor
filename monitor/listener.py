@@ -1,14 +1,10 @@
+#coding: utf-8
 '''
 用来监听的主类
 '''
 
-import socket
-import socketserver
 import sys
 import logging
-
-from socketserver import UDPServer as UDP
-from socketserver import DatagramRequestHandler as DRH
 
 from .db import mydb
 
@@ -27,23 +23,24 @@ import re
 
 import time
 
+suck = 0
+
 def get_time_str():
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
-class listener(DRH):
-
-    #执行监听任务
-    def handle(self):
-        print(100*"=")
+class processer:
+    def __init__(self):
         self.db = mydb(host='localhost',user="root",passwd='',port='3306')
+    
+    #执行监听任务
+    def handle(self,data,address):
+        print(100*"=")
         
-        data = self.request[0]
-
         #如果有数据
         if data:
 
             #解端口
-            ip,port = self.client_address
+            ip,port = address
             print("探针ip %s port %s"%(ip,port))
 
             #step1 从设备基本信息表中获取设备名
@@ -64,9 +61,10 @@ class listener(DRH):
             brand,coding_type,matching_rule,matching_position = all_info
 
             #step4 将data转码, 转成utf-8
-            data = str(data,encoding=coding_type)
-            data = data.encode()
-            data = str(data,encoding="utf-8")
+            #data = str(data,encoding=coding_type)
+            #data = data.encode()
+            #data = str(data,encoding="utf-8")
+            data = data.decode(coding_type).encode("utf-8")
 
             #step5 用正则表达式抓取
             pattern = re.compile(matching_rule,re.DOTALL)
@@ -91,7 +89,7 @@ class listener(DRH):
 
             #step 8 存
             insert_str = probe_log_info.insert_str(ndict)
-            self.db.execute_sql(insert_str,db_name)
+            self.db.insert_sql(insert_str,db_name)
 
             print("插入sql语句",insert_str)
             print("成功存入")

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#coding: utf-8
 
 '''
 这个脚本的目的是管理mysql中的表数据
@@ -11,6 +12,7 @@ import logging
 
 class mydb:
     def __init__(self,host,port,user,passwd):
+        self.count = 0
         #设置mysql连接
         try:
             self.conn = mysql.connector.connect(host=host,user=user,passwd=passwd,port=port)
@@ -41,6 +43,19 @@ class mydb:
             self.conn.commit()
         except Exception as err:
             logging.error(err)
+
+    def insert_sql(self,sql_str,db_name):
+        try :
+            self.count += 1
+            cur = self.conn.cursor()
+            cur.execute("use %s"%(db_name))
+            cur.execute(sql_str)
+            if self.count % 500 == 0:
+                self.conn.commit()
+                self.count = 0
+        except Exception as err:
+            logging.error(err)
+
         
     def select_sql(self,sql_str,db_name):
         try:
@@ -50,7 +65,7 @@ class mydb:
             cur.execute(sql_str)
             
             result = cur.fetchall()
-            self.conn.commit()
+            #self.conn.commit()
             
             return result
             

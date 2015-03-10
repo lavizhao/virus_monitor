@@ -1,29 +1,55 @@
-#!/usr/bin/python3
+#!/usr/bin/python
+#coding: utf-8
 
 '''
 监听程序的主体, 都是在这个部分跑的
 '''
 
-from socketserver import ThreadingUDPServer as UDP
+from SocketServer import ThreadingUDPServer as UDP1
+from SocketServer import DatagramRequestHandler as DRH
+from multiprocessing import Process,Queue
+import time
+from gevent.server import DatagramServer as UDP
 
 import sys,logging
 sys.path.append("..")
+from monitor.listener import processer
 
-from monitor.listener import listener
+gqueue = Queue(10000)
+
+def handle():
+    print("handle start")
+    count = 0
+    ps = processer()
+    
+    while True:
+        if gqueue.qsize() > 0:
+            data,address = gqueue.get()
+            ps.handle(data,address)
+            count += 1
+            print(count,"=")
+        else:
+            time.sleep(0.01)
 
 server_ip = '0.0.0.0'
 server_port = 514
 server_address = (server_ip,server_port)
 
+class listener(UDP):
+        
+    def handle(self,data,address):
+        gqueue.put((data,address))
+
 
 if __name__ == '__main__':
 
     print("begin to listen")
+    p = Process(target=handle,args=(tuple()))
+    p.start()
 
     try :
-        #lis = listener()
-
-        server = UDP(server_address,listener)
+        #server = UDP(server_address,listener)
+        server = listener('514')
 
     except Exception as err:
         logging.error(err)
