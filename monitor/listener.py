@@ -45,7 +45,6 @@ class listener(DRH):
             #解端口
             ip,port = self.client_address
             print("探针ip %s port %s"%(ip,port))
-            print("数据",data)
 
             #step1 从设备基本信息表中获取设备名
             device_name = self.get_probe_name_from_ip_port(ip,port)
@@ -93,6 +92,9 @@ class listener(DRH):
             #step 8 存
             insert_str = probe_log_info.insert_str(ndict)
             self.db.execute_sql(insert_str,db_name)
+
+            print("插入sql语句",insert_str)
+            print("成功存入")
                 
         else:
             logging.warning("no data recived, client error")

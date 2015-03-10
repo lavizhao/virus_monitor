@@ -4,7 +4,7 @@
 监听程序的主体, 都是在这个部分跑的
 '''
 
-from socketserver import UDPServer as UDP
+from socketserver import ThreadingUDPServer as UDP
 
 import sys,logging
 sys.path.append("..")
