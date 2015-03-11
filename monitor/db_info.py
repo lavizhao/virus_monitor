@@ -88,7 +88,7 @@ class table:
             else:
                 result += "%s"%(str(kv))
 
-        result += ")"
+        result += ")engine=\'MyISAM\'"
         return result
 
     def drop_str(self):
@@ -126,4 +126,5 @@ class table:
 
         result += ")"
         result1 += ")"
+        print(result+result1)
         return result + result1

@@ -10,7 +10,7 @@ import time
 import random
 
 def ran():
-    return random.random()/100
+    return random.random()/10000
 
 if "__main__" == __name__:
 
@@ -21,7 +21,7 @@ if "__main__" == __name__:
 
     #data = bytes("evtip:192.168.54.33;evtname:HTTP_directory.php_任意命令尝试;eid:152518787;counts:4;se:20;rspmode:65541;secutype:9;proto:HTTP;sr:192.168.3.50;dest:219.234.94.233;sport:0;dport:0;smac:00-0d-60-fb-19-4b;dmac:00-0d-60-fb-19-4b;param:主机名称=219.234.94.233;URL长度=39;URL名称=/directory.php?dir=%3Bcat%20/etc/passwd","utf-8")
 
-    count = 5000
+    count = 100000
     
     for i in range(count):
         print(i)

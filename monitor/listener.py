@@ -34,14 +34,14 @@ class processer:
     
     #执行监听任务
     def handle(self,data,address):
-        print(100*"=")
+        #print(100*"=")
         
         #如果有数据
         if data:
 
             #解端口
             ip,port = address
-            print("探针ip %s port %s"%(ip,port))
+            #print("探针ip %s port %s"%(ip,port))
 
             #step1 从设备基本信息表中获取设备名
             device_name = self.get_probe_name_from_ip_port(ip,port)
@@ -91,8 +91,8 @@ class processer:
             insert_str = probe_log_info.insert_str(ndict)
             self.db.insert_sql(insert_str,db_name)
 
-            print("插入sql语句",insert_str)
-            print("成功存入")
+            #print("成功存入")
+            print(".",)
                 
         else:
             logging.warning("no data recived, client error")

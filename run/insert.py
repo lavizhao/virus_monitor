@@ -20,7 +20,7 @@ if __name__ == '__main__':
     #插入设备基本信息表
     record1 = {\
                "device_name":"SV123456789",\
-               "device_ip":"127.0.0.2",\
+               "device_ip":"192.168.140.98",\
                "device_access":"test",\
                "device_access_interval":"test",\
                "manage_access_interval":"test",\

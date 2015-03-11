@@ -15,22 +15,25 @@ import sys,logging
 sys.path.append("..")
 from monitor.listener import processer
 
-gqueue = Queue(10000)
+gqueue = Queue(100000)
 
 def handle():
     print("handle start")
     count = 0
     ps = processer()
     
-    while True:
+    while 1:
         if gqueue.qsize() > 0:
             data,address = gqueue.get()
             ps.handle(data,address)
             count += 1
             print(count,"=")
         else:
-            time.sleep(0.01)
+            time.sleep(0.001)
 
+
+
+            
 server_ip = '0.0.0.0'
 server_port = 514
 server_address = (server_ip,server_port)
@@ -44,8 +47,11 @@ class listener(UDP):
 if __name__ == '__main__':
 
     print("begin to listen")
-    p = Process(target=handle,args=(tuple()))
-    p.start()
+    num = 5 
+    
+    for i in range(num):
+        p = Process(target=handle,args=(tuple()))
+        p.start()
 
     try :
         #server = UDP(server_address,listener)
