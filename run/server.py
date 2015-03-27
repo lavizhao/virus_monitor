@@ -47,7 +47,7 @@ class listener(UDP):
 if __name__ == '__main__':
 
     print("begin to listen")
-    num = 5 
+    num = 1
     
     for i in range(num):
         p = Process(target=handle,args=(tuple()))

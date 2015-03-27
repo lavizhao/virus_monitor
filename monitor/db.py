@@ -50,7 +50,7 @@ class mydb:
             cur = self.conn.cursor()
             cur.execute("use %s"%(db_name))
             cur.execute(sql_str)
-            if self.count % 500 == 0:
+            if self.count % 1 == 0:
                 self.conn.commit()
                 self.count = 0
         except Exception as err:

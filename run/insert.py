@@ -12,9 +12,12 @@ import unittest
 from monitor.db_info import field,kvtuple,table
 from monitor.db import mydb
 
-mdb = mydb(host='localhost',port='3306',user='root',passwd='')
+#mdb = mydb(host='localhost',port='3306',user='root',passwd='')
+mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
 
 from monitor.table_info import my_table,get_table
+
+dbname = "virus"
 
 if __name__ == '__main__':
     #插入设备基本信息表
@@ -30,7 +33,7 @@ if __name__ == '__main__':
     tb = get_table("device_info")
 
     insert_str = tb.insert_str(record1)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
     #插入探针信息表
     record2 = {\
@@ -44,7 +47,7 @@ if __name__ == '__main__':
     tb = get_table("probe_info")
 
     insert_str = tb.insert_str(record2)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
     #插入探针型号信息表
     record3 = {\
@@ -58,7 +61,7 @@ if __name__ == '__main__':
     tb = get_table("probe_type_info")
 
     insert_str = tb.insert_str(record3)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
 #==========================================================================    
     
@@ -74,7 +77,7 @@ if __name__ == '__main__':
     tb = get_table("probe_type_info")
 
     insert_str = tb.insert_str(record4)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
     #插入设备基本信息表
     record5 = {\
@@ -89,7 +92,7 @@ if __name__ == '__main__':
     tb = get_table("device_info")
 
     insert_str = tb.insert_str(record5)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
     #插入探针信息表
     record6 = {\
@@ -103,7 +106,7 @@ if __name__ == '__main__':
     tb = get_table("probe_info")
 
     insert_str = tb.insert_str(record6)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
 #======================================================
 
@@ -120,7 +123,7 @@ if __name__ == '__main__':
     tb = get_table("device_info")
 
     insert_str = tb.insert_str(record1)
-    mdb.execute_sql(insert_str,"virus")
+    mdb.execute_sql(insert_str,dbname)
 
     #插入探针信息表
     record2 = {\
@@ -148,4 +151,4 @@ if __name__ == '__main__':
     tb = get_table("probe_type_info")
 
     insert_str = tb.insert_str(record3)
-    mdb.execute_sql(insert_str,"virus")    
+    mdb.execute_sql(insert_str,dbname)    
