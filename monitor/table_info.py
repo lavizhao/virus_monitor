@@ -11,7 +11,8 @@ from .db_info import field,kvtuple,table
 from .db import mydb
 
 #mdb = mydb(host='localhost',port='3306',user='root',passwd='')
-mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
+#mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
+mdb = mydb(host='192.168.140.98',port='3306',user='zhao',passwd='111111111')
 
 mf = field()
 tbl = []

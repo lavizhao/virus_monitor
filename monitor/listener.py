@@ -31,11 +31,11 @@ def get_time_str():
 class processer:
     def __init__(self):
         #self.db = mydb(host='localhost',user="root",passwd='',port='3306')
-        self.db = mydb(host='192.168.140.98',user="root",passwd='hitjin',port='3306')
+        #self.db = mydb(host='192.168.140.98',user="root",passwd='hitjin',port='3306')
+        self.db = mydb(host='192.168.140.98',user="zhao",passwd='111111111',port='3306')
     
     #执行监听任务
     def handle(self,data,address):
-        #print(100*"=")
         
         #如果有数据
         if data:
@@ -46,25 +46,20 @@ class processer:
 
             #step1 从设备基本信息表中获取设备名
             device_name = self.get_probe_name_from_ip_port(ip,port)
-            print "设备id",device_name
 
             #step2 从探针信息表中获取syslog端口, 探针型号, 病毒日志统计, 监控网段
             all_info = self.get_all_info_from_probe_info(device_name)
-            print all_info
             if all_info == None:
                 logging.warning("can not find any information in probe info")
                 return None
 
-            print "所有信息",all_info
             device_port,device_type = all_info
-            print "device_type_id",device_type
 
             #step3 从探针型号信息表中得到全部信息
             all_info = self.get_all_from_probe_type_info(device_type)
             if all_info == None:
                 logging.warning("can not find any information in probe type info")
                 return None
-            print all_info
             brand,coding_type,matching_rule,matching_position = all_info
 
             #step4 将data转码, 转成utf-8
@@ -105,8 +100,6 @@ class processer:
             insert_str = probe_log_info.insert_str(ndict)
             self.db.insert_sql(insert_str,db_name)
 
-            #print("成功存入")
-            print(".",)
                 
         else:
             logging.warning("no data recived, client error")
@@ -139,7 +132,6 @@ class processer:
     #sql1 通过ip和port查找数据库中的探针名
     #====== 这里没有用port, 因为udp的port每次都会变 =======
     def get_probe_name_from_ip_port(self,ip,port):
-        print("ip is ",ip)
         sql_str = "select * from device_info where device_ip = \"%s\";"%(ip)
         result = self.db.select_sql(sql_str,db_name)
 
@@ -152,7 +144,6 @@ class processer:
         else:
             pass
 
-        print result
         result = result[0]
         #这里是采取硬结构进行编码, 因为返回的就是个list, 后面考虑修改    
         return result[0]
@@ -161,7 +152,6 @@ class processer:
     def get_all_info_from_probe_info(self,device_name):
         sql_str = "select device_port,device_type_id from probe_info where device_name_id = \"%s\";"%(device_name)
         result = self.db.select_sql(sql_str,db_name)
-        print(result)
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
@@ -181,7 +171,6 @@ class processer:
     def get_all_from_probe_type_info(self,device_type):
         sql_str = "select brand,coding_type,matching_rule,matching_positon from probe_type_info where id = \"%s\";"%(device_type)
         result = self.db.select_sql(sql_str,db_name)
-        print(result)
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:

@@ -5,17 +5,16 @@
 监听程序的主体, 都是在这个部分跑的
 '''
 
-from SocketServer import ThreadingUDPServer as UDP1
+from SocketServer import ThreadingUDPServer as UDP
 from SocketServer import DatagramRequestHandler as DRH
 from multiprocessing import Process,Queue
 import time
-from gevent.server import DatagramServer as UDP
 
 import sys,logging
 sys.path.append("..")
 from monitor.listener import processer
 
-gqueue = Queue(100000)
+gqueue = Queue(1000000)
 
 def handle():
     print("handle start")
@@ -38,24 +37,24 @@ server_ip = '0.0.0.0'
 server_port = 514
 server_address = (server_ip,server_port)
 
-class listener(UDP):
+class listener(DRH):
         
-    def handle(self,data,address):
-        gqueue.put((data,address))
+    def handle(self):
+        gqueue.put((self.request[0],self.client_address))
 
 
 if __name__ == '__main__':
 
     print("begin to listen")
-    num = 1
+    num = 10
     
     for i in range(num):
         p = Process(target=handle,args=(tuple()))
         p.start()
 
     try :
-        #server = UDP(server_address,listener)
-        server = listener('514')
+        server = UDP(server_address,listener)
+        #server = listener('514')
 
     except Exception as err:
         logging.error(err)
