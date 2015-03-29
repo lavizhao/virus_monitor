@@ -47,7 +47,7 @@ class listener(DRH):
 if __name__ == '__main__':
 
     print("begin to listen")
-    num = 10
+    num = int(cf["num_threads"])
     
     for i in range(num):
         p = Process(target=handle,args=(tuple()))
@@ -55,7 +55,6 @@ if __name__ == '__main__':
 
     try :
         server = UDP(server_address,listener)
-        #server = listener('514')
 
     except Exception as err:
         logging.error(err)
