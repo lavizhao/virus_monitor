@@ -29,7 +29,7 @@ class processer:
         passwd = cf["mysql_passwd"]
         if passwd =="null":
             passwd = ""
-        self.db = mydb(host=cf["mysql_host"],user=cf["mysql_user"],passwd=passwd,port=cf["mysql_port"])
+        self.db = mydb(host=cf["mysql_host"],user=cf["mysql_user"],passwd=passwd,port=int(cf["mysql_port"]))
         self.commit_num = int(cf["commit_num"])
 
         self.db_name = cf["mysql_dbname"]

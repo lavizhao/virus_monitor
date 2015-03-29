@@ -1,20 +1,20 @@
 # virus_monitor
 主要有一个监控病毒的server, 和数据库建表文件和一些常用的处理函数
 
-##文件夹作用
-
-`monitor/` 监控程序防止的位置
-`util` 常用函数存放位置, 这个主要是为了方便日后其他人调用
-`test` 测试
-
 ##执行
 
-###run
+### for run
 
-`./create_db.py` 建立数据库, 执行main函数则建数据库, 建表, drop则删除整个数据库
-`./insert.py` 插入一些样例数据
+`sudo ./server.py` ，配置文件均在`server.conf`上
 
-###test
+### for test
 
-`./db.py` 测试table的一些基本命令, 数据库的命令没有测试, 因为不好测, 都是实际写的
+`./client.py`
 
+###打成二进制
+
+`cd run`
+
+`pyinstaller --onefile -p ../ server.py`
+
+请将`server.conf`拷入dist文件夹下使用
