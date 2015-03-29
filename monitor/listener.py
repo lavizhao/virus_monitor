@@ -135,6 +135,7 @@ class processer:
         if len(result) > 1:
             logging.error("more than one record has been found, error in device_info")
         elif len(result) == 0:
+            logging.error("search query %s"%(sql_str))
             logging.error("no record has been found, error in device_info")
             return None
         else:
@@ -154,6 +155,7 @@ class processer:
             logging.error("more than one record has been found, error in device_info")
             return None
         elif len(result) == 0:
+            logging.error("search query %s"%(sql_str))            
             logging.error("no record has been found, error in probe_info")
             return None
         else:
@@ -172,6 +174,7 @@ class processer:
         if len(result) > 1:
             logging.error("more than one record has been found, error in device_info")
         elif len(result) == 0:
+            logging.error("search query %s"%(sql_str))
             logging.error("no record has been found, error in probe_type_info")
         else:
             pass
