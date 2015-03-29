@@ -13,13 +13,16 @@ import time
 import sys,logging
 sys.path.append("..")
 from monitor.listener import processer
+from monitor.read_conf import config
 
-gqueue = Queue(1000000)
+cf = config("server.conf")
+
+gqueue = Queue(int(cf["queue_size"]))
 
 def handle():
     print("handle start")
     count = 0
-    ps = processer()
+    ps = processer(cf)
     
     while 1:
         if gqueue.qsize() > 0:
@@ -30,11 +33,9 @@ def handle():
         else:
             time.sleep(0.001)
 
-
-
             
-server_ip = '0.0.0.0'
-server_port = 514
+server_ip = cf["server_ip"]
+server_port = int(cf["server_port"])
 server_address = (server_ip,server_port)
 
 class listener(DRH):
@@ -60,7 +61,6 @@ if __name__ == '__main__':
         logging.error(err)
         logging.error("no server has been built")
 
-    #lis.run()
     server.serve_forever()    
         
     print("end listen")

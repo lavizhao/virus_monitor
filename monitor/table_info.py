@@ -10,9 +10,6 @@ import logging
 from .db_info import field,kvtuple,table
 from .db import mydb
 
-#mdb = mydb(host='localhost',port='3306',user='root',passwd='')
-#mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
-mdb = mydb(host='192.168.140.98',port='3306',user='zhao',passwd='111111111')
 
 mf = field()
 tbl = []
@@ -223,15 +220,17 @@ for tb in tbl:
 
 
 def drop():
+    mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
     mdb.drop_db("virus")
 
 def drop_table():
+    mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
     for tb in my_table:
         if tb.name == "white_list":
             mdb.execute_sql(tb.drop_str(),"virus")
 
 def main():
-
+    mdb = mydb(host='192.168.140.98',port='3306',user='root',passwd='hitjin')
     mdb.create_db("virus")
     for tb in my_table:
         mdb.execute_sql(tb.sql_str(),"virus")

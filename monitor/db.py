@@ -44,13 +44,13 @@ class mydb:
         except Exception as err:
             logging.error(err)
 
-    def insert_sql(self,sql_str,db_name):
+    def insert_sql(self,sql_str,db_name,commit_num = 1):
         try :
             self.count += 1
             cur = self.conn.cursor()
             cur.execute("use %s"%(db_name))
             cur.execute(sql_str)
-            if self.count % 1 == 0:
+            if self.count % commit_num == 0:
                 self.conn.commit()
                 self.count = 0
         except Exception as err:

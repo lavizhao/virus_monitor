@@ -10,29 +10,29 @@ from .db import mydb
 
 from .table_info import my_table,get_table
 
+from .read_conf import config
+
+cf = config("server.conf")
+
 #得到探针日志信息表
 probe_log_info = get_table("probe_log_info")
-
-server_ip = '0.0.0.0'
-server_port = 514
-server_address = (server_ip,server_port)
-data_payload = 2048
-db_name = "virus2"
 
 import re
 
 import time
 
-suck = 0
-
 def get_time_str():
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
 class processer:
-    def __init__(self):
-        #self.db = mydb(host='localhost',user="root",passwd='',port='3306')
-        #self.db = mydb(host='192.168.140.98',user="root",passwd='hitjin',port='3306')
-        self.db = mydb(host='192.168.140.98',user="zhao",passwd='111111111',port='3306')
+    def __init__(self,cf):
+        passwd = cf["mysql_passwd"]
+        if passwd =="null":
+            passwd = ""
+        self.db = mydb(host=cf["mysql_host"],user=cf["mysql_user"],passwd=passwd,port=cf["mysql_port"])
+        self.commit_num = int(cf["commit_num"])
+
+        self.db_name = cf["mysql_dbname"]
     
     #执行监听任务
     def handle(self,data,address):
@@ -42,7 +42,6 @@ class processer:
 
             #解端口
             ip,port = address
-            #print("探针ip %s port %s"%(ip,port))
 
             #step1 从设备基本信息表中获取设备名
             device_name = self.get_probe_name_from_ip_port(ip,port)
@@ -63,9 +62,6 @@ class processer:
             brand,coding_type,matching_rule,matching_position = all_info
 
             #step4 将data转码, 转成utf-8
-            #data = str(data,encoding=coding_type)
-            #data = data.encode()
-            #data = str(data,encoding="utf-8")
             data = data.decode(coding_type).encode("utf-8").strip()
 
             #step5 用正则表达式抓取
@@ -98,7 +94,7 @@ class processer:
             
             #step 8 存
             insert_str = probe_log_info.insert_str(ndict)
-            self.db.insert_sql(insert_str,db_name)
+            self.db.insert_sql(insert_str,self.db_name,self.commit_num)
 
                 
         else:
@@ -133,7 +129,7 @@ class processer:
     #====== 这里没有用port, 因为udp的port每次都会变 =======
     def get_probe_name_from_ip_port(self,ip,port):
         sql_str = "select * from device_info where device_ip = \"%s\";"%(ip)
-        result = self.db.select_sql(sql_str,db_name)
+        result = self.db.select_sql(sql_str,self.db_name)
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
@@ -151,7 +147,7 @@ class processer:
     #sql2 从探针信息表中获取syslog端口, 探针型号, 病毒日志统计, 监控网段
     def get_all_info_from_probe_info(self,device_name):
         sql_str = "select device_port,device_type_id from probe_info where device_name_id = \"%s\";"%(device_name)
-        result = self.db.select_sql(sql_str,db_name)
+        result = self.db.select_sql(sql_str,self.db_name)
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
@@ -170,7 +166,7 @@ class processer:
     #sql3 从探针型号信息表中得到数据
     def get_all_from_probe_type_info(self,device_type):
         sql_str = "select brand,coding_type,matching_rule,matching_positon from probe_type_info where id = \"%s\";"%(device_type)
-        result = self.db.select_sql(sql_str,db_name)
+        result = self.db.select_sql(sql_str,self.db_name)
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
