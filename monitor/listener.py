@@ -25,14 +25,16 @@ def get_time_str():
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
 class processer:
-    def __init__(self,cf):
+    def __init__(self,cf,logger):
+        self.logger = logger
         passwd = cf["mysql_passwd"]
         if passwd =="null":
             passwd = ""
-        self.db = mydb(host=cf["mysql_host"],user=cf["mysql_user"],passwd=passwd,port=int(cf["mysql_port"]))
+        self.db = mydb(self.logger,host=cf["mysql_host"],user=cf["mysql_user"],passwd=passwd,port=int(cf["mysql_port"]))
         self.commit_num = int(cf["commit_num"])
 
         self.db_name = cf["mysql_dbname"]
+
     
     #执行监听任务
     def handle(self,data,address):
@@ -50,6 +52,7 @@ class processer:
             all_info = self.get_all_info_from_probe_info(device_name)
             if all_info == None:
                 logging.warning("can not find any information in probe info")
+                self.logger.warn("在probe info中没有发现信息，设备名为%s"%(device_name))
                 return None
 
             device_port,device_type = all_info
@@ -58,6 +61,7 @@ class processer:
             all_info = self.get_all_from_probe_type_info(device_type)
             if all_info == None:
                 logging.warning("can not find any information in probe type info")
+                self.logger.warn("在probe type info中没有发现信息，设备型号为%s"%(device_type))
                 return None
             brand,coding_type,matching_rule,matching_position = all_info
 
@@ -71,6 +75,7 @@ class processer:
             #如果正则表达式没有找出来, 说明不是病毒日志, 不进行存储 
             if len(temp_position) == 0:
                 logging.warning("this is not a virus log")
+                self.logger.warn("病毒日志没有解析出来，日志为|%s|,正则表达式为|%s|，编码格式为%s"%(data,matching_rule,coding_type))
                 return None
             else:
                 temp_position = temp_position[0]
@@ -99,15 +104,21 @@ class processer:
                 
         else:
             logging.warning("no data recived, client error")
-
+            self.logger.error("收到信息为空")
 
     #抓取ip
     def extract_ip(self,mip):
         ip = re.findall(r'\d+\.\d+\.\d+\.\d+',mip)
+        if len(ip) <=0 or len(ip) >1:
+            self.logger.error("ip没有抽取成功，query|%s|"%(mip))
+            return '0.0.0.0'
         return ip[0]
 
     def extract_port(self,mport):
         port = re.findall(r'\d+',mport)
+        if len(port) <=0 or len(port) >1:
+            self.logger.error("port没有抽取成功，query|%s|"%(mport))
+            return '404'
         return port[0]
             
     #matching position 形式如下: col:0 0表示正则表达式抓出来的pattern的位置
@@ -134,9 +145,11 @@ class processer:
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
             logging.error("more than one record has been found, error in device_info")
+            self.logger.error("device info搜索结果大于一个，搜索query为|%s|，搜索结果为"%(sql_str,' '.join(result)))
         elif len(result) == 0:
             logging.error("search query %s"%(sql_str))
             logging.error("no record has been found, error in device_info")
+            self.logger.warn("没有检索结果被检索 ，搜索query为|%s|，搜索结果为"%(sql_str))
             return None
         else:
             pass
@@ -153,10 +166,12 @@ class processer:
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
             logging.error("more than one record has been found, error in device_info")
+            self.logger.error("probe info搜索结果大于一个，搜索query为|%s|，搜索结果为"%(sql_str,' '.join(result)))            
             return None
         elif len(result) == 0:
             logging.error("search query %s"%(sql_str))            
             logging.error("no record has been found, error in probe_info")
+            self.logger.warn("没有检索结果被检索 ，搜索query为|%s|，搜索结果为"%(sql_str))
             return None
         else:
             pass
@@ -172,10 +187,12 @@ class processer:
 
         #如果结果大于1, 说明数据库录入有错误
         if len(result) > 1:
+            self.logger.error("probe type info搜索结果大于一个，搜索query为|%s|，搜索结果为"%(sql_str,' '.join(result)))            
             logging.error("more than one record has been found, error in device_info")
         elif len(result) == 0:
             logging.error("search query %s"%(sql_str))
             logging.error("no record has been found, error in probe_type_info")
+            self.logger.warn("没有检索结果被检索 ，搜索query为|%s|，搜索结果为"%(sql_str))
         else:
             pass
 

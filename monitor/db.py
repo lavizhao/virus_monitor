@@ -11,13 +11,15 @@ import mysql.connector
 import logging 
 
 class mydb:
-    def __init__(self,host,port,user,passwd):
+    def __init__(self,logger,host,port,user,passwd):
         self.count = 0
+        self.logger = logger
         #设置mysql连接
         try:
             self.conn = mysql.connector.connect(host=host,user=user,passwd=passwd,port=port)
         except Exception as err:
             logging.error(err)
+            logger.error("数据库建立连接有问题，无法连接,%s"%(err))
 
     def create_db(self,db_name):
         try:        
@@ -72,4 +74,5 @@ class mydb:
         except Exception as err:
             logging.error(err)
             logging.error("select error")
+            logger.error("搜索结果报错，query%s,err|%s|"%(sql_str,err))
 

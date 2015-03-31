@@ -10,19 +10,33 @@ from SocketServer import DatagramRequestHandler as DRH
 from multiprocessing import Process,Queue
 import time
 
-import sys,logging
+import sys,logging,logging.handlers
 sys.path.append("..")
 from monitor.listener import processer
 from monitor.read_conf import config
+
+#配置log
+LOG_FILE = 'crash.log'  
+  
+handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes = 1024*1024) # 实例化handler    
+fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'  
+  
+formatter = logging.Formatter(fmt) 
+handler.setFormatter(formatter)    
+  
+logger = logging.getLogger('crash')
+logger.addHandler(handler)         
+logger.setLevel(logging.DEBUG)
 
 cf = config("server.conf")
 
 gqueue = Queue(int(cf["queue_size"]))
 
+
 def handle():
     print("handle start")
     count = 0
-    ps = processer(cf)
+    ps = processer(cf,logger)
     
     while 1:
         if gqueue.qsize() > 0:
@@ -59,6 +73,7 @@ if __name__ == '__main__':
     except Exception as err:
         logging.error(err)
         logging.error("no server has been built")
+        logger.error("不能建立server，建立server有问题，err为%s"%(err))
 
     server.serve_forever()    
         
